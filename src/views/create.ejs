@@ -1,0 +1,218 @@
+<!-- views/createUser.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create User</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+      }
+
+      form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        box-sizing: border-box;
+      }
+
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+
+  <body>
+    <form id="createUserForm">
+      <h2>Create User</h2>
+      <label for="firstName">First Name:</label>
+      <input type="text" id="firstName" name="firstName" required />
+
+      <label for="lastName">Last Name:</label>
+      <input type="text" id="lastName" name="lastName" required />
+
+      <label for="mobileNumber">Mobile Number:</label>
+      <input type="text" id="mobileNumber" name="mobileNumber" required />
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="address">Address:</label>
+      <label for="street">Street:</label>
+      <input type="text" id="street" name="street" required />
+
+      <label for="city">City:</label>
+      <input type="text" id="city" name="city" required />
+
+      <label for="state">State:</label>
+      <input type="text" id="state" name="state" required />
+
+      <label for="country">Country:</label>
+      <input type="text" id="country" name="country" required />
+
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required />
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+
+      <button type="button" id="createUserBtn">Create User</button>
+      <a href="http://localhost:3000/login">Go to Login Page</a>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- ... (previous HTML code) ... -->
+
+    <!-- ... (previous HTML code) ... -->
+
+    <!-- ... (previous HTML code) ... -->
+
+    <!-- ... (previous HTML code) ... -->
+
+    <!-- ... (previous HTML code) ... -->
+
+    <script>
+      $(document).ready(function () {
+        $("#createUserBtn").click(function () {
+          const firstName = $("#firstName").val();
+          const lastName = $("#lastName").val();
+          const mobileNumber = $("#mobileNumber").val();
+          const email = $("#email").val();
+          const street = $("#street").val();
+          const city = $("#city").val();
+          const state = $("#state").val();
+          const country = $("#country").val();
+          const username = $("#username").val();
+          const password = $("#password").val();
+
+          // Log input values for debugging
+          console.log("Input Values:", {
+            firstName,
+            lastName,
+            mobileNumber,
+            email,
+            street,
+            city,
+            state,
+            country,
+            username,
+            password,
+          });
+
+          // Validate inputs
+          if (
+            !firstName ||
+            !lastName ||
+            !email ||
+            !street ||
+            !city ||
+            !state ||
+            !country ||
+            !username ||
+            !password
+          ) {
+            alert("Please fill in all fields.");
+            return;
+          }
+
+          // Validate mobile number (10 digits)
+          if (!/^\d{10}$/.test(mobileNumber)) {
+            alert("Mobile number must be 10 digits.");
+            return;
+          }
+
+          // Validate password (at least 1 uppercase, 1 lowercase, 1 special character)
+          if (!/(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()_+])/.test(password)) {
+            alert(
+              "Password must contain at least 1 uppercase letter, 1 lowercase letter, and 1 special character."
+            );
+            return;
+          }
+
+          // Send data to the server (replace 'YOUR_API_ENDPOINT' with your actual API endpoint)
+          $.ajax({
+            type: "POST",
+            url: "http://localhost:3000/api/user/create",
+            contentType: "application/json",
+            data: JSON.stringify({
+              firstName,
+              lastName,
+              mobileNumber,
+              email,
+              address: {
+                street,
+                city,
+                state,
+                country,
+              },
+              username,
+              password,
+            }),
+            success: function (data) {
+              console.log("Success:", data);
+              alert("User created successfully");
+              // Redirect or perform any other actions as needed
+              window.location.href =
+                data.redirectUrl || "http://localhost:3000/login";
+            },
+            error: function (error) {
+              console.error("Error:", error);
+
+              // Check if the server sent back an error message
+              if (error.responseJSON && error.responseJSON.message) {
+                const errorMessage = error.responseJSON.message;
+
+                // Check for specific error messages and show corresponding alerts
+                if (errorMessage.includes("Email is already registered")) {
+                  alert(
+                    "Email is already registered. Please use a different email."
+                  );
+                } else if (
+                  errorMessage.includes("Username is already registered")
+                ) {
+                  alert(
+                    "Username is already registered. Please choose a different username."
+                  );
+                } else {
+                  alert("Error creating user: " + errorMessage);
+                }
+              } else {
+                alert("Error creating user. Check console for details.");
+              }
+            },
+          });
+        });
+      });
+    </script>
+
+    <!-- ... (remaining HTML code) ... -->
+  </body>
+</html>

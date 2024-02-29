@@ -1,0 +1,101 @@
+<!-- views/showUser.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Details</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      div {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+      }
+
+      h2 {
+        color: #333;
+      }
+
+      p {
+        color: #666;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="userDetailsContainer">
+      <a href="/logout">Logout</a>
+    </div>
+
+    <!-- ... (your existing HTML code) ... -->
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        // Make an Ajax request to fetch user details
+        $.ajax({
+          type: "GET",
+          url: "http://localhost:3000/api/user/get", // Update the URL to match your server route
+          success: function (data) {
+            // Assuming the server returns an array of user objects
+            displayUserDetails(data);
+            console.log(data, "data");
+          },
+          error: function (error) {
+            console.error("Error fetching user details:", error);
+          },
+        });
+
+        function displayUserDetails(users) {
+          const username = localStorage.getItem("username");
+          console.log("Local Storage Username:", username);
+
+          // Find the user with the matching username in the array
+          const currentUser = users.find((user) => user.username === username);
+
+          if (currentUser) {
+            // Update the HTML content with user details
+            $("#userDetailsContainer").html(`
+                    <h2>User Details</h2>
+                    <p><strong>Username:</strong> ${currentUser.username}</p>
+                    <p><strong>Email:</strong> ${currentUser.email}</p>
+                    <p><strong>Full Name:</strong> ${currentUser.firstName} ${currentUser.lastName}</p>
+                    <p><strong>Mobile Number:</strong> ${currentUser.mobileNumber}</p>
+                    <p><strong>Address:</strong> ${currentUser.address.street}, ${currentUser.address.city}, ${currentUser.address.state}, ${currentUser.address.country}</p>
+                    <!-- Add more user details as needed -->
+                    <a href="#" id="logoutBtn">Logout</a>
+                `);
+
+            // Add a click event listener to the Logout button
+            $("#logoutBtn").click(function () {
+              // Clear localStorage
+              localStorage.clear();
+              // Redirect to the login page
+              window.location.href = "/login"; // Update the URL as needed
+            });
+          } else {
+            console.log("User not found in the array.");
+          }
+        }
+      });
+    </script>
+
+    <!-- ... (your existing HTML code) ... -->
+  </body>
+</html>
